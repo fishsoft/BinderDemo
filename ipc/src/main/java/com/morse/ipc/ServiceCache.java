@@ -6,6 +6,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 服务接口缓存
+ */
 public class ServiceCache {
 
     private static final String TAG = "IPC：ServiceCache";
@@ -37,22 +40,45 @@ public class ServiceCache {
         return instance;
     }
 
+    /**
+     * 注册服务
+     *
+     * @param key 服务标识
+     * @param clazz 服务类
+     */
     public void register(String key, Class<?> clazz) {
         Log.d(TAG, "register");
         registerClass(key, clazz);
         registerMethod(clazz);
     }
 
+    /**
+     * 获取服务对象
+     *
+     * @param clazz 对象类名
+     * @return 返回服务对象
+     */
     public Object getObject(String clazz) {
         Log.d(TAG, "getObject");
         // 将客户端需要调用的接口、方法参数发送出去
         return mInstanceObjectMap.get(clazz);
     }
 
+    /**
+     * 保存服务对象
+     *
+     * @param className 服务类名
+     * @param o 服务对象
+     */
     public void putObject(String className, Object o) {
         mInstanceObjectMap.put(className, o);
     }
 
+    /**
+     * 注册方法
+     *
+     * @param clazz 服务类名
+     */
     private void registerMethod(Class<?> clazz) {
         Log.d(TAG, "registerMethod");
         Method[] methods = clazz.getDeclaredMethods();
@@ -89,11 +115,24 @@ public class ServiceCache {
         return result.toString();
     }
 
+    /**
+     * 注册服务
+     *
+     * @param key 服务标识
+     * @param clazz 服务类
+     */
     private void registerClass(String key, Class<?> clazz) {
         Log.d(TAG, "registerClass");
         mClassMap.put(key, clazz);
     }
 
+    /**
+     * 从缓存中获取方法
+     *
+     * @param className 类名
+     * @param methodName 方法名
+     * @return 方法
+     */
     public Method getMethod(String className, String methodName) {
         ConcurrentHashMap<String, Method> methods = mAllMethodMap.get(className);
         if (methods == null) {

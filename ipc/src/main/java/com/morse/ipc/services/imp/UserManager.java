@@ -24,4 +24,9 @@ public class UserManager implements IUserManager {
     public User getUser() {
         return user;
     }
+
+    @Override
+    public User getUser(String name) {
+        return new User("morse", "123123");
+    }
 }

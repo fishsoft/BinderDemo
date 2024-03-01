@@ -10,4 +10,6 @@ public interface IUserManager {
 
     User getUser();
 
+    User getUser(String name);
+
 }

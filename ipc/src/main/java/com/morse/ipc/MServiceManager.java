@@ -52,10 +52,22 @@ public class MServiceManager {
         mContext = context.getApplicationContext();
     }
 
+    /**
+     * 链接服务
+     * @param context
+     * @param packageName
+     */
     private void open(Context context, String packageName) {
         bind(context.getApplicationContext(), packageName, MorseService.class);
     }
 
+    /**
+     * 绑定服务
+     *
+     * @param context 绑定对象的上下文
+     * @param packageName 包名
+     * @param service 接口
+     */
     private void bind(Context context, String packageName, Class<? extends MorseService> service) {
         Log.d(TAG, "bind");
         Intent intent;
@@ -82,12 +94,29 @@ public class MServiceManager {
         mServiceCache.register(key, clazz);
     }
 
+    /**
+     * 获取对象实例
+     *
+     * @param clazz 实例化的对象类
+     * @return 实例化的对象
+     * @param <T>
+     */
     public <T> T getInstance(Class<T> clazz) {
         Log.d(TAG, "getInstance");
        sendRequest(clazz, null, new Object[0], REQUEST_GET);
         return (T)Proxy.newProxyInstance(mContext.getClassLoader(), new Class[]{clazz}, new BPBinder(clazz));
     }
 
+    /**
+     * 发送数据，并接收返回的响应信息
+     *
+     * @param clazz 调用的类
+     * @param method 调用的方法
+     * @param parameters 调用方法的参数
+     * @param type 调用方法类型
+     * @return 响应消息
+     * @param <T>
+     */
     public <T> String sendRequest(Class<T> clazz, Method method, Object[] parameters, int type) {
         String request =  gson.toJson(getRequestData(clazz, method, parameters, type));
         Log.d(TAG, "sendRequest: request: " + request);
@@ -99,6 +128,16 @@ public class MServiceManager {
         return null;
     }
 
+    /**
+     * 根据类和方法信息，将参数转化成java请求类
+     *
+     * @param clazz 调用的类
+     * @param method 调用的方法
+     * @param parameters 调用方法的参数
+     * @param type 方法类型
+     * @return javabean
+     * @param <T>
+     */
     private <T> RequestBean getRequestData(Class<T> clazz, Method method, Object[] parameters,
                                            int type) {
         RequestBean requestBean = new RequestBean();
@@ -124,6 +163,9 @@ public class MServiceManager {
         return requestBean;
     }
 
+    /**
+     * 链接服务
+     */
     private class MServiceConnection implements ServiceConnection {
 
         @Override

@@ -14,11 +14,12 @@ import com.morse.ipc.bean.RequestParameter;
 
 import java.lang.reflect.Method;
 
+/**
+ * 服务的具体实现
+ */
 public class MorseService extends Service {
 
     private Gson gson = new Gson();
-
-    private ServiceCache cache = ServiceCache.getInstance();
 
     private BBBinder bbBinder = new BBBinder();
 
@@ -28,6 +29,7 @@ public class MorseService extends Service {
         return new MorseBinderInterface.Stub() {
             @Override
             public String transcat(String request) throws RemoteException {
+                // 接受到数据，对数据进行解析
                 if (TextUtils.isEmpty(request)) {
                     return null;
                 }
@@ -37,18 +39,22 @@ public class MorseService extends Service {
                 int type = requestBean.getType();
                 switch (type) {
                     case MServiceManager.REQUEST_GET:
+                        // 调用实例化接口，从json数据中获取调用方法的对应方法，方法参数
                         Object[] objects = makeParameterObject(requestBean.getRequestParameters());
-                        Method method = cache.getMethod(className, makeMethodKey(methodName,
+                        Method method = ServiceCache.getInstance().getMethod(className, makeMethodKey(methodName,
                                 requestBean.getRequestParameters()));
-
+                        // 接受对应实例化方法的处理结果
                         Object o = bbBinder.onTransact(null, method, objects);
-                        cache.putObject(className, o);
+                        // 保存对象
+                        ServiceCache.getInstance().putObject(className, o);
                         break;
                     case MServiceManager.REQUEST_INVOKE:
-                        Object object = cache.getObject(className);
-                        Method method1 = cache.getMethod(className, makeMethodKey(methodName,
+                        // 调用实例化的对象的具体方法，从缓存中找到对应的对象和方法以及参数
+                        Object object = ServiceCache.getInstance().getObject(className);
+                        Method method1 = ServiceCache.getInstance().getMethod(className, makeMethodKey(methodName,
                                 requestBean.getRequestParameters()));
                         Object[] objects1 = makeParameterObject(requestBean.getRequestParameters());
+                        // 接收调用的方法的执行结果
                         Object data = bbBinder.onTransact(object, method1, objects1);
                         return gson.toJson(data);
                     default:
