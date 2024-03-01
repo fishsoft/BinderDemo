@@ -43,7 +43,7 @@ public class ServiceCache {
     /**
      * 注册服务
      *
-     * @param key 服务标识
+     * @param key   服务标识
      * @param clazz 服务类
      */
     public void register(String key, Class<?> clazz) {
@@ -68,7 +68,7 @@ public class ServiceCache {
      * 保存服务对象
      *
      * @param className 服务类名
-     * @param o 服务对象
+     * @param o         服务对象
      */
     public void putObject(String className, Object o) {
         mInstanceObjectMap.put(className, o);
@@ -118,7 +118,7 @@ public class ServiceCache {
     /**
      * 注册服务
      *
-     * @param key 服务标识
+     * @param key   服务标识
      * @param clazz 服务类
      */
     private void registerClass(String key, Class<?> clazz) {
@@ -129,7 +129,7 @@ public class ServiceCache {
     /**
      * 从缓存中获取方法
      *
-     * @param className 类名
+     * @param className  类名
      * @param methodName 方法名
      * @return 方法
      */

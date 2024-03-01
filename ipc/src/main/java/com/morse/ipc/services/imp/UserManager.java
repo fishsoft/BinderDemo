@@ -9,7 +9,8 @@ public class UserManager implements IUserManager {
 
     private static UserManager instance = new UserManager();
 
-    private UserManager() {}
+    private UserManager() {
+    }
 
     public static UserManager getInstance() {
         return instance;

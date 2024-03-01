@@ -28,7 +28,8 @@ public class BPBinder implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Log.d(TAG, "invoke");
         // 发送客户端参数，并接受服务器端返回的数据
-        String data = MServiceManager.getDefault().sendRequest(clazz, method, args, MServiceManager.REQUEST_INVOKE);
+        String data = MServiceManager.getDefault().sendRequest(clazz, method, args,
+                MServiceManager.REQUEST_INVOKE);
         return TextUtils.isEmpty(data) ? null : gson.fromJson(data, method.getReturnType());
     }
 }
