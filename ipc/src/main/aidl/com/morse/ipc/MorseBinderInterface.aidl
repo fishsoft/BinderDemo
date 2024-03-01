@@ -5,5 +5,5 @@ package com.morse.ipc;
 
 interface MorseBinderInterface {
 
-    String reuqest(String request);
+    String transcat(String request);
 }

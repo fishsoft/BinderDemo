@@ -1,10 +1,14 @@
 package com.morse.ipc;
 
+import android.util.Log;
+
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceCache {
+
+    private static final String TAG = "IPC：ServiceCache";
 
     private static final ServiceCache instance = new ServiceCache();
 
@@ -34,15 +38,23 @@ public class ServiceCache {
     }
 
     public void register(String key, Class<?> clazz) {
+        Log.d(TAG, "register");
         registerClass(key, clazz);
         registerMethod(clazz);
     }
 
-    public <T> T getObject(Class<T> clazz, Object ...params) {
-        return null;
+    public Object getObject(String clazz) {
+        Log.d(TAG, "getObject");
+        // 将客户端需要调用的接口、方法参数发送出去
+        return mInstanceObjectMap.get(clazz);
+    }
+
+    public void putObject(String className, Object o) {
+        mInstanceObjectMap.put(className, o);
     }
 
     private void registerMethod(Class<?> clazz) {
+        Log.d(TAG, "registerMethod");
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             ConcurrentHashMap<String, Method> map = mAllMethodMap.get(clazz.getName());
@@ -52,7 +64,7 @@ public class ServiceCache {
             }
             // java存在重载函数，在保存方法时，对方法进行签名
             String key = getMethodParameters(method);
-            map.put(method.getName(), method);
+            map.put(key, method);
         }
     }
 
@@ -63,6 +75,7 @@ public class ServiceCache {
      * @return 签名
      */
     private String getMethodParameters(Method method) {
+        Log.d(TAG, "getMethodParameters");
         StringBuilder result = new StringBuilder();
         result.append(method.getName());
         Class<?>[] classess = method.getParameterTypes();
@@ -77,6 +90,15 @@ public class ServiceCache {
     }
 
     private void registerClass(String key, Class<?> clazz) {
+        Log.d(TAG, "registerClass");
         mClassMap.put(key, clazz);
+    }
+
+    public Method getMethod(String className, String methodName) {
+        ConcurrentHashMap<String, Method> methods = mAllMethodMap.get(className);
+        if (methods == null) {
+            return null;
+        }
+        return methods.get(methodName);
     }
 }
