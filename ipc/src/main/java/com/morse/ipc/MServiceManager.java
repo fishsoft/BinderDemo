@@ -84,17 +84,19 @@ public class MServiceManager {
 
     public <T> T getInstance(Class<T> clazz) {
         Log.d(TAG, "getInstance");
-        String data = sendRequest(clazz, null, null, REQUEST_GET);
-        try {
-            morseBinderInterface.transcat(data);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+       sendRequest(clazz, null, new Object[0], REQUEST_GET);
         return (T)Proxy.newProxyInstance(mContext.getClassLoader(), new Class[]{clazz}, new BPBinder(clazz));
     }
 
     public <T> String sendRequest(Class<T> clazz, Method method, Object[] parameters, int type) {
-        return gson.toJson(getRequestData(clazz, method, parameters, type));
+        String request =  gson.toJson(getRequestData(clazz, method, parameters, type));
+        Log.d(TAG, "sendRequest: request: " + request);
+        try {
+            return morseBinderInterface.transcat(request);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private <T> RequestBean getRequestData(Class<T> clazz, Method method, Object[] parameters,
@@ -106,6 +108,7 @@ public class MServiceManager {
         requestBean.setType(type);
         int length = parameters == null ? 0 : parameters.length;
         if (length == 0) {
+            requestBean.setRequestParameters(new RequestParameter[0]);
             return requestBean;
         }
         RequestParameter[] requestParameters = new RequestParameter[length];
